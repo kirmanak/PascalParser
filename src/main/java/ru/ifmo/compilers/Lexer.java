@@ -15,20 +15,48 @@ class Lexer {
         while ((character = reader.read()) != -1) {
             final String symbol = String.valueOf((char) character);
 
-            if (LexemeClass.determine(symbol) == LexemeClass.Separator) {
-                final String token = stringBuilder.toString();
+            final String oldString = stringBuilder.toString();
+            stringBuilder.append(symbol);
+            final String newString = stringBuilder.toString();
 
-                final LexemeClass lexemeClass = LexemeClass.determine(token);
-                if (lexemeClass != LexemeClass.Undefined)
-                    foundLexemes.add(new Lexeme(lexemeClass, token, lineNumber));
+            final LexemeClass oldClass = LexemeClass.determine(oldString);
+            final LexemeClass newClass = LexemeClass.determine(newString);
 
-                stringBuilder.append(symbol);
-                if (stringBuilder.toString().endsWith(System.lineSeparator()))
+            final boolean isLineSeparator = newString.endsWith(System.lineSeparator());
+
+            if (LexemeClass.determine(symbol) == LexemeClass.Separator || isLineSeparator) {
+                if (!oldString.isBlank())
+                    foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
+                if (isLineSeparator)
                     lineNumber++;
-
+                else
+                    foundLexemes.add(new Lexeme(LexemeClass.Separator, symbol, lineNumber));
                 stringBuilder = new StringBuilder();
-            } else {
-                stringBuilder.append(symbol);
+                continue;
+            }
+
+            if (oldClass == LexemeClass.Ident || oldClass == LexemeClass.Keyword || newClass == LexemeClass.Ident || newClass == LexemeClass.Keyword) {
+                if (newClass == LexemeClass.Undefined) {
+                    foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
+                    stringBuilder = new StringBuilder().append(symbol);
+                }
+                continue;
+            }
+
+            if (oldClass == LexemeClass.Const || newClass == LexemeClass.Const) {
+                if (newClass != LexemeClass.Const) {
+                    foundLexemes.add(new Lexeme(LexemeClass.Const, oldString, lineNumber));
+                    stringBuilder = new StringBuilder();
+                }
+                continue;
+            }
+
+            if (newClass != LexemeClass.Undefined) {
+                foundLexemes.add(new Lexeme(newClass, newString, lineNumber));
+                stringBuilder = new StringBuilder();
+            } else if (oldClass != LexemeClass.Undefined) {
+                foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
+                stringBuilder = new StringBuilder().append(symbol);
             }
         }
 
