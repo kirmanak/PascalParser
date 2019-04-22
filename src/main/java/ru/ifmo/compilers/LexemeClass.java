@@ -48,9 +48,9 @@ public enum LexemeClass {
      */
     Undefined(Collections.emptySet());
 
-    private static final Pattern DIGIT_PATTERN = Pattern.compile("^\\p{javaDigit}+$");
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("^\\p{javaWhitespace}+$");
-    private static final Pattern LETTER_PATTERN = Pattern.compile("^\\p{javaAlphabetic}+$");
+    private static final Pattern DIGIT_PATTERN = Pattern.compile("^\\p{Digit}+$");
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("^\\p{Space}+$");
+    private static final Pattern LETTER_PATTERN = Pattern.compile("^\\p{Alpha}+$");
 
     private final Set<String> mPossibleValues;
 
