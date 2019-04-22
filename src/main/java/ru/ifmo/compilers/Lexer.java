@@ -7,22 +7,22 @@ import java.util.List;
 
 class Lexer {
     List<Lexeme> readToEnd(final BufferedReader reader) throws IOException {
-        final List<Lexeme> foundLexemes = new LinkedList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        int lineNumber = 1;
+        final var foundLexemes = new LinkedList<Lexeme>();
+        var stringBuilder = new StringBuilder();
+        var lineNumber = 1;
 
         int character;
         while ((character = reader.read()) != -1) {
-            final String symbol = String.valueOf((char) character);
+            final var symbol = String.valueOf((char) character);
 
-            final String oldString = stringBuilder.toString();
+            final var oldString = stringBuilder.toString();
             stringBuilder.append(symbol);
-            final String newString = stringBuilder.toString();
+            final var newString = stringBuilder.toString();
 
-            final LexemeClass oldClass = LexemeClass.determine(oldString);
-            final LexemeClass newClass = LexemeClass.determine(newString);
+            final var oldClass = LexemeClass.determine(oldString);
+            final var newClass = LexemeClass.determine(newString);
 
-            final boolean isLineSeparator = newString.endsWith(System.lineSeparator());
+            final var isLineSeparator = newString.endsWith(System.lineSeparator());
 
             if (LexemeClass.determine(symbol) == LexemeClass.Separator || isLineSeparator) {
                 if (!oldString.isBlank()) {

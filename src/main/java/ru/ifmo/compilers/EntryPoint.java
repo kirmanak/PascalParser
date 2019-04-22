@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,7 @@ public class EntryPoint {
     public static void main(final String[] args) {
         final BufferedReader reader;
         if (args.length > 0) {
-            final Path path = Paths.get(args[0]);
+            final var path = Paths.get(args[0]);
             BufferedReader tmp = null;
             try {
                 tmp = Files.newBufferedReader(path);
@@ -35,8 +34,8 @@ public class EntryPoint {
         }
 
         if (foundLexemes != null) {
-            for (final Lexeme foundLexeme : foundLexemes)
-                System.out.println(foundLexeme.toString());
+            for (final var foundLexeme : foundLexemes)
+                System.out.println(foundLexeme);
         }
     }
 }

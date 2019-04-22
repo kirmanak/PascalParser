@@ -67,23 +67,23 @@ public enum LexemeClass {
         if (string == null)
             return Undefined;
 
-        for (final String assignmentOperator : AssignmentOperator.getPossibleValues())
+        for (final var assignmentOperator : AssignmentOperator.getPossibleValues())
             if (assignmentOperator.equals(string))
                 return AssignmentOperator;
 
-        for (final String arithmeticOperator : ArithmeticOperator.getPossibleValues())
+        for (final var arithmeticOperator : ArithmeticOperator.getPossibleValues())
             if (arithmeticOperator.equals(string))
                 return ArithmeticOperator;
 
-        for (final String comparisonOperator : ComparisonOperator.getPossibleValues())
+        for (final var comparisonOperator : ComparisonOperator.getPossibleValues())
             if (comparisonOperator.equals(string))
                 return ComparisonOperator;
 
-        for (final String keyword : Keyword.getPossibleValues())
+        for (final var keyword : Keyword.getPossibleValues())
             if (keyword.equals(string))
                 return Keyword;
 
-        for (final String keyword : Separator.getPossibleValues())
+        for (final var keyword : Separator.getPossibleValues())
             if (keyword.equals(string))
                 return Separator;
 
