@@ -39,10 +39,6 @@ public class Lexeme {
 
     @Override
     public String toString() {
-        return "Lexeme{" +
-                "mClass=" + mClass +
-                ", mSign='" + mSign + '\'' +
-                ", mLine=" + mLine +
-                '}';
+        return String.format("Lexeme { mClass = %-20s, mSign = '%-10s', mLine = %-3d }", mClass, mSign, mLine);
     }
 }
