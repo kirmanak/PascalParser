@@ -35,26 +35,7 @@ class Lexer {
                 continue;
             }
 
-            if (oldClass == LexemeClass.Ident || oldClass == LexemeClass.Keyword || newClass == LexemeClass.Ident || newClass == LexemeClass.Keyword) {
-                if (newClass == LexemeClass.Undefined) {
-                    foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
-                    stringBuilder = new StringBuilder().append(symbol);
-                }
-                continue;
-            }
-
-            if (oldClass == LexemeClass.Const || newClass == LexemeClass.Const) {
-                if (newClass != LexemeClass.Const) {
-                    foundLexemes.add(new Lexeme(LexemeClass.Const, oldString, lineNumber));
-                    stringBuilder = new StringBuilder();
-                }
-                continue;
-            }
-
-            if (newClass != LexemeClass.Undefined) {
-                foundLexemes.add(new Lexeme(newClass, newString, lineNumber));
-                stringBuilder = new StringBuilder();
-            } else if (oldClass != LexemeClass.Undefined) {
+            if (oldClass != LexemeClass.Undefined && newClass == LexemeClass.Undefined) {
                 foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
                 stringBuilder = new StringBuilder().append(symbol);
             }
