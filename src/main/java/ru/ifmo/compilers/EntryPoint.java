@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class EntryPoint {
+    /**
+     * The program entry point. Checks arguments for a file name, tries to open it if any present.
+     * If none is present or the open attempt failed, reads from stdin. Passes the input to Lexer, prints the result.
+     *
+     * @param args arguments passed to program on start
+     */
     public static void main(final String[] args) {
         final BufferedReader reader;
         if (args.length > 0) {

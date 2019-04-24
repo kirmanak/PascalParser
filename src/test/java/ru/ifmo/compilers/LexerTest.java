@@ -14,7 +14,7 @@ class LexerTest {
 
     List<Lexeme> getResult(final String code) {
         final var reader = new BufferedReader(new StringReader(code));
-        try {
+        try (reader) {
             return new Lexer().readToEnd(reader);
         } catch (IOException e) {
             throw new RuntimeException(e);

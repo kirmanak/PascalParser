@@ -6,6 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 class Lexer {
+    /**
+     * Reads the characters from the provided reader until the input is over.
+     * Returns the list of lexemes which were found in the stream.
+     *
+     * @param reader the reader to be read from
+     * @return the list of lexemes
+     * @throws IOException if failed to read from the reader
+     */
     List<Lexeme> readToEnd(final BufferedReader reader) throws IOException {
         final var foundLexemes = new LinkedList<Lexeme>();
         var stringBuilder = new StringBuilder();
