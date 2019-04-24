@@ -9,6 +9,7 @@ class Lexer {
     List<Lexeme> readToEnd(final BufferedReader reader) throws IOException {
         final var foundLexemes = new LinkedList<Lexeme>();
         var stringBuilder = new StringBuilder();
+        LexemeClass newClass = null;
         var lineNumber = 1;
 
         int character;
@@ -20,7 +21,7 @@ class Lexer {
             final var newString = stringBuilder.toString();
 
             final var oldClass = LexemeClass.determine(oldString);
-            final var newClass = LexemeClass.determine(newString);
+            newClass = LexemeClass.determine(newString);
 
             final var isLineSeparator = newString.endsWith(System.lineSeparator());
 
@@ -44,6 +45,10 @@ class Lexer {
                 stringBuilder = new StringBuilder().append(symbol);
             }
         }
+
+        final var lastCharacters = stringBuilder.toString();
+        if (!lastCharacters.isBlank())
+            foundLexemes.add(new Lexeme(newClass, lastCharacters, lineNumber));
 
         return foundLexemes;
     }
