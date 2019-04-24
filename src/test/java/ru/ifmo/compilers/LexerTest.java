@@ -82,6 +82,18 @@ class LexerTest {
     }
 
     @Test
+    void endsWithLineSeparator() {
+        final var code = "Begin\nы:=10;";
+
+        final var expected = List.of(
+                new Lexeme(LexemeClass.Keyword, "Begin", 1),
+                new Lexeme(LexemeClass.Separator, ";", 2)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
     void bigProgram() {
         final var code =
                 "Var i, abc, d;\n" + // 1
