@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -24,9 +25,57 @@ class LexerTest {
     void emptyProgram() {
         final var code = "Begin\nEnd.";
 
-        final List<Lexeme> expected = List.of(
+        final var expected = List.of(
                 new Lexeme(LexemeClass.Keyword, "Begin", 1),
                 new Lexeme(LexemeClass.Keyword, "End.", 2)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void noText() {
+        final String code = "";
+
+        final var expected = Collections.emptyList();
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void assignmentNoSeparator() {
+        final var code = "a:=10;";
+
+        final var expected = List.of(
+                new Lexeme(LexemeClass.Ident, "a", 1),
+                new Lexeme(LexemeClass.AssignmentOperator, ":=", 1),
+                new Lexeme(LexemeClass.Const, "10", 1),
+                new Lexeme(LexemeClass.Separator, ";", 1)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void invalidCharacter() {
+        final var code = "ы :=10;";
+
+        final var expected = List.of(
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.AssignmentOperator, ":=", 1),
+                new Lexeme(LexemeClass.Const, "10", 1),
+                new Lexeme(LexemeClass.Separator, ";", 1)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void invalidCharacterNoSeparator() {
+        final var code = "ы:=10;";
+
+        final var expected = List.of(
+                new Lexeme(LexemeClass.Separator, ";", 1)
         );
 
         assertIterableEquals(expected, getResult(code));
