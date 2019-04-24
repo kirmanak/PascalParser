@@ -199,4 +199,16 @@ class LexerTest {
 
         assertIterableEquals(expected, getResult(code));
     }
+
+    @Test
+    void constKeywordNoSeparator() {
+        final var code = "0Begin";
+
+        final var expected = List.of(
+                new Lexeme(LexemeClass.Const, "0", 1),
+                new Lexeme(LexemeClass.Keyword, "Begin", 1)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
 }
