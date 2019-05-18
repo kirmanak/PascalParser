@@ -73,7 +73,7 @@ class OutputTreeNode<T> {
      * @param hasNext whether the root node has more children or not
      * @param stream  the stream to write output
      */
-    private void printAsChild(@NonNull String prefix, boolean hasNext, PrintStream stream) {
+    private void printAsChild(@NonNull String prefix, boolean hasNext, @NonNull PrintStream stream) {
         stream.println(prefix + "│   ");
         stream.println(prefix + (hasNext ? "├── " : "└── ") + content);
 
