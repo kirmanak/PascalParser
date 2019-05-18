@@ -26,12 +26,22 @@ class OutputTreeNode<T> {
      */
     private final List<OutputTreeNode> children = new LinkedList<>();
 
+    /**
+     * Wraps OutputStream to PrintStream.
+     * Returns the argument if it is actually a PrintStream
+     * or creates a new one otherwise.
+     *
+     * @param out the stream to be wrapped
+     * @return the argument itself or a new PrintStream instance
+     */
     private static PrintStream getOutput(@NonNull OutputStream out) {
         return out instanceof PrintStream ? (PrintStream) out : new PrintStream(out);
     }
 
     /**
-     * Prints the node as root node and its children
+     * Prints the node as root node, then prints its children
+     *
+     * @param out where to print the data
      */
     void print(@NonNull OutputStream out) {
         PrintStream stream = getOutput(out);
@@ -61,6 +71,7 @@ class OutputTreeNode<T> {
      *
      * @param prefix  the prefix to be printed before the node
      * @param hasNext whether the root node has more children or not
+     * @param stream  the stream to write output
      */
     private void printAsChild(@NonNull String prefix, boolean hasNext, PrintStream stream) {
         stream.println(prefix + "│   ");
