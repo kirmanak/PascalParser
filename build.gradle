@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id "io.freefair.lombok" version "3.5.2"
 }
 
 group 'ru.ifmo.compilers'
