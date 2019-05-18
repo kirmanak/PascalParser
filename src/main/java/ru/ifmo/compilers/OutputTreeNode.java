@@ -35,7 +35,7 @@ class OutputTreeNode<T> {
      * @return the argument itself or a new PrintStream instance
      */
     private static PrintStream getOutput(@NonNull OutputStream out) {
-        return out instanceof PrintStream ? (PrintStream) out : new PrintStream(out);
+        return out instanceof PrintStream ? (PrintStream) out : new PrintStream(out, true);
     }
 
     /**
