@@ -5,7 +5,6 @@ import lombok.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 class ASTNode {
@@ -13,19 +12,18 @@ class ASTNode {
     private final List<ASTNode> children = new LinkedList<>();
 
     void print() {
-        print("", true);
+        System.out.println(lexeme);
+        var iterator = children.iterator();
+        while (iterator.hasNext())
+            iterator.next().print("", !iterator.hasNext());
     }
 
     private void print(@NonNull String prefix, boolean isTail) {
         System.out.println(prefix + (isTail ? "└── " : "├── ") + lexeme);
 
-        Optional<ASTNode> lastChild = Optional.empty();
-        for (var child : children) {
-            child.print(prefix + (isTail ? "    " : "│   "), false);
-            lastChild = Optional.of(child);
-        }
-
-        lastChild.ifPresent(node -> node.print(prefix + (isTail ? "    " : "│   "), true));
+        var iterator = children.iterator();
+        while (iterator.hasNext())
+            iterator.next().print(prefix + (isTail ? "    " : "│   "), !iterator.hasNext());
     }
 
     ASTNode addChild(@NonNull Lexeme lexeme) {
