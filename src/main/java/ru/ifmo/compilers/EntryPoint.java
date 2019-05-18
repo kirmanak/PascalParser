@@ -1,12 +1,16 @@
 package ru.ifmo.compilers;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntryPoint {
     /**
@@ -15,33 +19,49 @@ public class EntryPoint {
      *
      * @param args arguments passed to program on start
      */
-    public static void main(final String[] args) {
-        final BufferedReader reader;
-        if (args.length > 0) {
-            final var path = Paths.get(args[0]);
-            BufferedReader tmp = null;
-            try {
-                tmp = Files.newBufferedReader(path);
-            } catch (final IOException e) {
-                System.err.printf("Unable to open file %s for reading: %s\n", path, e.toString());
-            }
+    public static void main(String[] args) {
+        var openFiles = getOpenFiles(args);
 
-            reader = Objects.requireNonNullElseGet(tmp, () -> new BufferedReader(new InputStreamReader(System.in)));
-        } else {
-            reader = new BufferedReader(new InputStreamReader(System.in));
+        if (openFiles.isEmpty())
+            openFiles.add(new BufferedInputStream(System.in));
+
+        openFiles.stream()
+                .map(EntryPoint::getLexemes)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(lexemes -> {
+                    System.out.println("\nPrinting the result for next file:\n");
+                    lexemes.forEach(System.out::println);
+                });
+    }
+
+    private static Optional<InputStream> openFile(Path name) {
+        try {
+            return Optional.of(Files.newInputStream(name, StandardOpenOption.READ));
+        } catch (IOException e) {
+            System.err.printf("Unable to open file %s for reading: %s\n", name, e.toString());
         }
 
-        List<Lexeme> foundLexemes = null;
+        return Optional.empty();
+    }
 
-        try (reader) {
-            foundLexemes = new Lexer().readToEnd(reader);
-        } catch (final IOException e) {
+    private static List<BufferedInputStream> getOpenFiles(String[] args) {
+        return Stream.of(args)
+                .map(Paths::get)
+                .map(EntryPoint::openFile)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BufferedInputStream::new)
+                .collect(Collectors.toList());
+    }
+
+    private static Optional<List<Lexeme>> getLexemes(BufferedInputStream inputStream) {
+        try (inputStream) {
+            return Optional.of(new Lexer().readToEnd(inputStream));
+        } catch (IOException e) {
             System.err.printf("Unable to read input: %s\n", e.getMessage());
         }
 
-        if (foundLexemes != null) {
-            for (final var foundLexeme : foundLexemes)
-                System.out.println(foundLexeme);
-        }
+        return Optional.empty();
     }
 }

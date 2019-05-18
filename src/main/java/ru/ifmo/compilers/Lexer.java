@@ -1,44 +1,44 @@
 package ru.ifmo.compilers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 class Lexer {
     /**
-     * Reads the characters from the provided reader until the input is over.
+     * Reads the characters from the provided stream until the input is over.
      * Returns the list of lexemes which were found in the stream.
      *
-     * @param reader the reader to be read from
+     * @param stream the stream to be read from
      * @return the list of lexemes
-     * @throws IOException if failed to read from the reader
+     * @throws IOException if failed to read from the stream
      */
-    List<Lexeme> readToEnd(final BufferedReader reader) throws IOException {
-        final var foundLexemes = new LinkedList<Lexeme>();
+    List<Lexeme> readToEnd(InputStream stream) throws IOException {
+        var foundLexemes = new LinkedList<Lexeme>();
         var stringBuilder = new StringBuilder();
         LexemeClass newClass = null;
         var lineNumber = 1;
 
         int character;
-        while ((character = reader.read()) != -1) {
-            final var symbol = String.valueOf((char) character);
+        while ((character = stream.read()) != -1) {
+            var symbol = String.valueOf((char) character);
 
-            final var oldString = stringBuilder.toString();
+            var oldString = stringBuilder.toString();
             stringBuilder.append(symbol);
-            final var newString = stringBuilder.toString();
+            var newString = stringBuilder.toString();
 
-            final var oldClass = LexemeClass.determine(oldString);
+            var oldLexemeClass = LexemeClass.determine(oldString);
             newClass = LexemeClass.determine(newString);
 
-            final var isLineSeparator = newString.endsWith(System.lineSeparator());
+            var isLineSeparator = newString.endsWith(System.lineSeparator());
 
             if (LexemeClass.determine(symbol) == LexemeClass.Separator || isLineSeparator) {
                 if (!oldString.isBlank()) {
-                    if (oldClass == LexemeClass.Undefined)
+                    if (oldLexemeClass == LexemeClass.Undefined)
                         System.err.printf("Undefined sequence found on %d-th line: %s\n", lineNumber, oldString);
                     else
-                        foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
+                        foundLexemes.add(new Lexeme(oldLexemeClass, oldString, lineNumber));
                 }
                 if (isLineSeparator)
                     lineNumber++;
@@ -48,8 +48,8 @@ class Lexer {
                 continue;
             }
 
-            if (oldClass != LexemeClass.Undefined && newClass == LexemeClass.Undefined) {
-                foundLexemes.add(new Lexeme(oldClass, oldString, lineNumber));
+            if (oldLexemeClass != LexemeClass.Undefined && newClass == LexemeClass.Undefined) {
+                foundLexemes.add(new Lexeme(oldLexemeClass, oldString, lineNumber));
                 stringBuilder = new StringBuilder().append(symbol);
             }
         }

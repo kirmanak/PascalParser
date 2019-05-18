@@ -1,12 +1,16 @@
 package ru.ifmo.compilers;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Represents the class of a lexeme
  */
+@RequiredArgsConstructor
 public enum LexemeClass {
     /**
      * Assignment operator: ":="
@@ -54,52 +58,44 @@ public enum LexemeClass {
 
     private final Set<String> mPossibleValues;
 
-    LexemeClass(final Set<String> possibleValues) {
-        this.mPossibleValues = possibleValues;
-    }
-
     /**
      * Tries to find a lexeme in the provided string
      *
      * @return The class of found lexeme or {@link LexemeClass#Undefined} if not found
      */
-    public static LexemeClass determine(final String string) {
-        if (string == null)
+    public static LexemeClass determine(String string) {
+        if (string == null || string.isEmpty())
             return Undefined;
 
-        for (final var assignmentOperator : AssignmentOperator.getPossibleValues())
-            if (assignmentOperator.equals(string))
-                return AssignmentOperator;
-
-        for (final var arithmeticOperator : ArithmeticOperator.getPossibleValues())
-            if (arithmeticOperator.equals(string))
-                return ArithmeticOperator;
-
-        for (final var comparisonOperator : ComparisonOperator.getPossibleValues())
-            if (comparisonOperator.equals(string))
-                return ComparisonOperator;
-
-        for (final var keyword : Keyword.getPossibleValues())
-            if (keyword.equals(string))
-                return Keyword;
-
-        for (final var keyword : Separator.getPossibleValues())
-            if (keyword.equals(string))
-                return Separator;
-
-        if (WHITESPACE_PATTERN.matcher(string).matches())
-            return Separator;
-
-        if (DIGIT_PATTERN.matcher(string).matches())
-            return Const;
-
-        if (LETTER_PATTERN.matcher(string).matches())
-            return Ident;
-
-        return Undefined;
+        return Stream.of(values())
+                .filter(lexemeClass -> lexemeClass.test(string))
+                .findFirst()
+                .orElse(LexemeClass.Undefined);
     }
 
-    public Set<String> getPossibleValues() {
-        return mPossibleValues;
+    private boolean test(String value) {
+        switch (this) {
+            case Separator:
+                if (WHITESPACE_PATTERN.matcher(value).matches())
+                    return true;
+
+            case AssignmentOperator:
+            case ArithmeticOperator:
+            case ComparisonOperator:
+            case Keyword:
+                return mPossibleValues.contains(value);
+
+            case Const:
+                return DIGIT_PATTERN.matcher(value).matches();
+
+            case Ident:
+                return LETTER_PATTERN.matcher(value).matches();
+
+            case Undefined:
+                return false;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + this);
+        }
     }
 }

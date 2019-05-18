@@ -2,9 +2,8 @@ package ru.ifmo.compilers;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class LexerTest {
 
-    List<Lexeme> getResult(final String code) {
-        final var reader = new BufferedReader(new StringReader(code));
-        try (reader) {
-            return new Lexer().readToEnd(reader);
+    List<Lexeme> getResult(String code) {
+        var stream = new ByteArrayInputStream(code.getBytes());
+        try (stream) {
+            return new Lexer().readToEnd(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
