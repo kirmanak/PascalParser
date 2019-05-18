@@ -63,9 +63,11 @@ class OutputTreeNode<T> {
      * @param hasNext whether the root node has more children or not
      */
     private void printAsChild(@NonNull String prefix, boolean hasNext, PrintStream stream) {
+        stream.println(prefix + "│   ");
         stream.println(prefix + (hasNext ? "├── " : "└── ") + content);
 
         var newPrefix = prefix + (hasNext ? "│   " : "    ");
+
         var iterator = children.iterator();
         while (iterator.hasNext())
             iterator.next().printAsChild(newPrefix, iterator.hasNext(), stream);
