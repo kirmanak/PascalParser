@@ -11,7 +11,7 @@ import java.util.Random;
 class Parser {
     @NonNull
     private final List<Lexeme> lexemes;
-    private ASTNode<Lexeme> root = null;
+    private OutputTreeNode<Lexeme> root = null;
 
     Parser parseProgram() {
         if (root != null)
@@ -19,9 +19,9 @@ class Parser {
 
         var iterator = lexemes.listIterator();
         if (iterator.hasNext())
-            root = new ASTNode<>(iterator.next());
+            root = new OutputTreeNode<>(iterator.next());
 
-        ASTNode<Lexeme> lastNode = root;
+        OutputTreeNode<Lexeme> lastNode = root;
         while (iterator.hasNext()) {
             if (new Random().nextBoolean())
                 lastNode = lastNode.addChild(iterator.next());
@@ -32,7 +32,7 @@ class Parser {
         return this;
     }
 
-    Optional<ASTNode> getRoot() {
+    Optional<OutputTreeNode> getRoot() {
         return Optional.ofNullable(root);
     }
 }
