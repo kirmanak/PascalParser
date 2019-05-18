@@ -14,6 +14,8 @@ class Lexer {
      * @return the list of lexemes
      * @throws IOException if failed to read from the stream
      */
+    // TODO: add support for comments
+    // TODO: refactor this shit
     List<Lexeme> readToEnd(InputStream stream) throws IOException {
         var foundLexemes = new LinkedList<Lexeme>();
         var stringBuilder = new StringBuilder();
