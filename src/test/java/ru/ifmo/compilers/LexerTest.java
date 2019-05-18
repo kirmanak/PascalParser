@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LexerTest {
 
@@ -292,5 +293,14 @@ class LexerTest {
         );
 
         assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void disallowReUsageOfInstance() {
+        assertThrows(IllegalStateException.class, () -> {
+            var lexer = new Lexer(new ByteArrayInputStream("hello".getBytes()));
+            lexer.readToEnd();
+            lexer.readToEnd();
+        }, "You have to use a new instance of " + Lexer.class.getSimpleName());
     }
 }
