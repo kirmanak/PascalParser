@@ -31,9 +31,8 @@ class Lexer implements AutoCloseable, Closeable {
             throw new IllegalStateException("You have to use a new instance of " + Lexer.class.getSimpleName());
 
         int character;
-        while ((character = stream.read()) != -1) {
+        while ((character = stream.read()) != -1)
             onNewSymbol(Character.toString(character));
-        }
 
         if (!currentString.isBlank())
             addLexeme(new Lexeme(currentClass, currentString, lineNumber));

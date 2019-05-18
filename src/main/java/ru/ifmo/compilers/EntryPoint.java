@@ -32,6 +32,13 @@ public class EntryPoint {
                 .forEach(lexemes -> {
                     System.out.println("\nPrinting the result for next file:\n");
                     lexemes.forEach(System.out::println);
+
+                    System.out.println("\nPrinting the AST:\n");
+
+                    new Parser(lexemes)
+                            .parseProgram()
+                            .getRoot()
+                            .ifPresent(ASTNode::print);
                 });
     }
 
