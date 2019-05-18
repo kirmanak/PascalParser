@@ -35,6 +35,12 @@ public class EntryPoint {
                 });
     }
 
+    /**
+     * Tries to open the file
+     *
+     * @param name the name of the target file
+     * @return result if the file has been open successfully
+     */
     private static Optional<InputStream> openFile(Path name) {
         try {
             return Optional.of(Files.newInputStream(name, StandardOpenOption.READ));
@@ -45,6 +51,12 @@ public class EntryPoint {
         return Optional.empty();
     }
 
+    /**
+     * Maps the arguments to list of open files
+     *
+     * @param args the arguments from the user
+     * @return list of open files
+     */
     private static List<BufferedInputStream> getOpenFiles(String[] args) {
         return Stream.of(args)
                 .map(Paths::get)
@@ -55,6 +67,12 @@ public class EntryPoint {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Tries to map an open file to list of the lexemes
+     *
+     * @param inputStream the file to be lexed
+     * @return the list of the lexemes if successfully read the file
+     */
     private static Optional<List<Lexeme>> getLexemes(BufferedInputStream inputStream) {
         try (inputStream) {
             return Optional.of(new Lexer().readToEnd(inputStream));

@@ -73,6 +73,12 @@ public enum LexemeClass {
                 .orElse(LexemeClass.Undefined);
     }
 
+    /**
+     * Tests if the string can be {@link this}
+     *
+     * @param value the string to be tested
+     * @return true if the string is {@link this}, false otherwise
+     */
     private boolean test(String value) {
         switch (this) {
             case Separator:
