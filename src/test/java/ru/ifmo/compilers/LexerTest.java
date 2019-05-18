@@ -213,4 +213,84 @@ class LexerTest {
 
         assertIterableEquals(expected, getResult(code));
     }
+
+    @Test
+    void commentedLine() {
+        var code = "Var a, hello;\n" +
+                "Begin\n" +
+                "  a := 10;\n" +
+                "  { hello := 10 }\n" +
+                "End.";
+
+        var expected = List.of(
+                new Lexeme(LexemeClass.Keyword, "Var", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Ident, "a", 1),
+                new Lexeme(LexemeClass.Separator, ",", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Ident, "hello", 1),
+                new Lexeme(LexemeClass.Separator, ";", 1),
+
+                new Lexeme(LexemeClass.Keyword, "Begin", 2),
+                new Lexeme(LexemeClass.Separator, " ", 3),
+                new Lexeme(LexemeClass.Separator, " ", 3),
+                new Lexeme(LexemeClass.Ident, "a", 3),
+                new Lexeme(LexemeClass.Separator, " ", 3),
+                new Lexeme(LexemeClass.AssignmentOperator, ":=", 3),
+                new Lexeme(LexemeClass.Separator, " ", 3),
+                new Lexeme(LexemeClass.Const, "10", 3),
+                new Lexeme(LexemeClass.Separator, ";", 3),
+
+                new Lexeme(LexemeClass.Separator, " ", 4),
+                new Lexeme(LexemeClass.Separator, " ", 4),
+
+                new Lexeme(LexemeClass.Keyword, "End.", 5)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void twoCommentedLines() {
+        var code = "Var a, hello;\n" +
+                "Begin\n" +
+                "  { a := 10;\n" +
+                "  hello := 10 }\n" +
+                "End.";
+
+        var expected = List.of(
+                new Lexeme(LexemeClass.Keyword, "Var", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Ident, "a", 1),
+                new Lexeme(LexemeClass.Separator, ",", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Ident, "hello", 1),
+                new Lexeme(LexemeClass.Separator, ";", 1),
+
+                new Lexeme(LexemeClass.Keyword, "Begin", 2),
+
+                new Lexeme(LexemeClass.Separator, " ", 3),
+                new Lexeme(LexemeClass.Separator, " ", 3),
+
+                new Lexeme(LexemeClass.Keyword, "End.", 5)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
+
+    @Test
+    void illegalCharactersInComment() {
+        var code = "Var hello, { русский язык };";
+
+        var expected = List.of(
+                new Lexeme(LexemeClass.Keyword, "Var", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Ident, "hello", 1),
+                new Lexeme(LexemeClass.Separator, ",", 1),
+                new Lexeme(LexemeClass.Separator, " ", 1),
+                new Lexeme(LexemeClass.Separator, ";", 1)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
 }

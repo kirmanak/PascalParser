@@ -18,6 +18,7 @@ class Lexer implements AutoCloseable, Closeable {
     private String currentString = "";
     private int lineNumber = 1;
     private LexemeClass currentClass;
+    private boolean isComment = false;
 
     /**
      * Reads the characters from the provided stream until the input is over.
@@ -39,38 +40,13 @@ class Lexer implements AutoCloseable, Closeable {
     }
 
     /**
-     * Checks each new symbol
+     * Checks if the current symbol is a line separator
      *
-     * @param symbol the new symbol
+     * @param symbol the symbol to be checked
+     * @return true if the symbol is line separator
      */
-    // TODO: add support for comments
-    private void onNewSymbol(String symbol) {
-        String oldString = currentString;
-        currentString += symbol;
-
-        LexemeClass oldLexemeClass = LexemeClass.determine(oldString);
-        currentClass = LexemeClass.determine(currentString);
-
-        boolean isLineSeparator = currentString.endsWith(System.lineSeparator());
-
-        if (LexemeClass.Separator.test(symbol) || isLineSeparator) {
-            if (!oldString.isBlank()) {
-                if (oldLexemeClass == LexemeClass.Undefined)
-                    System.err.printf("Undefined sequence found on %d-th line: %s\n", lineNumber, oldString);
-                else
-                    addLexeme(new Lexeme(oldLexemeClass, oldString, lineNumber));
-            }
-
-            if (isLineSeparator)
-                lineNumber++;
-            else
-                addLexeme(new Lexeme(LexemeClass.Separator, symbol, lineNumber));
-
-            currentString = "";
-        } else if (oldLexemeClass != LexemeClass.Undefined && currentClass == LexemeClass.Undefined) {
-            addLexeme(new Lexeme(oldLexemeClass, oldString, lineNumber));
-            currentString = symbol;
-        }
+    private static boolean isLineSeparator(String symbol) {
+        return System.lineSeparator().endsWith(symbol);
     }
 
     /**
@@ -97,5 +73,64 @@ class Lexer implements AutoCloseable, Closeable {
             lexemes = new LinkedList<>();
 
         lexemes.add(lexeme);
+    }
+
+    /**
+     * Checks each new symbol
+     *
+     * @param symbol the new symbol
+     */
+    private void onNewSymbol(String symbol) {
+        if (checkComments(symbol))
+            return;
+
+        String oldString = currentString;
+        currentString += symbol;
+
+        LexemeClass oldLexemeClass = LexemeClass.determine(oldString);
+        currentClass = LexemeClass.determine(currentString);
+
+        boolean isLineSeparator = isLineSeparator(symbol);
+
+        if (LexemeClass.Separator.test(symbol) || isLineSeparator) {
+            if (!oldString.isBlank()) {
+                if (oldLexemeClass == LexemeClass.Undefined)
+                    System.err.printf("Undefined sequence found on %d-th line: %s\n", lineNumber, oldString);
+                else
+                    addLexeme(new Lexeme(oldLexemeClass, oldString, lineNumber));
+            }
+
+            if (isLineSeparator)
+                lineNumber++;
+            else
+                addLexeme(new Lexeme(LexemeClass.Separator, symbol, lineNumber));
+
+            currentString = "";
+        } else if (oldLexemeClass != LexemeClass.Undefined && currentClass == LexemeClass.Undefined) {
+            addLexeme(new Lexeme(oldLexemeClass, oldString, lineNumber));
+            currentString = symbol;
+        }
+    }
+
+    /**
+     * Checks if the stream is currently sending commented characters
+     *
+     * @return true if the symbols are commented and should be skipped
+     */
+    private boolean checkComments(String symbol) {
+        if (symbol.equals("{")) {
+            isComment = true;
+            return true;
+        }
+
+        if (isComment) {
+            if (symbol.equals("}"))
+                isComment = false;
+            else if (isLineSeparator(symbol))
+                lineNumber++;
+            return true;
+        }
+
+        return false;
     }
 }
