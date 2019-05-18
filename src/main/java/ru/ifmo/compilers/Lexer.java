@@ -56,7 +56,7 @@ class Lexer {
             }
         }
 
-        final var lastCharacters = stringBuilder.toString();
+        var lastCharacters = stringBuilder.toString();
         if (!lastCharacters.isBlank())
             foundLexemes.add(new Lexeme(newClass, lastCharacters, lineNumber));
 

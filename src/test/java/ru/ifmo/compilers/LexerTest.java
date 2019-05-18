@@ -11,8 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class LexerTest {
 
-    List<Lexeme> getResult(String code) {
+    private List<Lexeme> getResult(String code) {
         var stream = new ByteArrayInputStream(code.getBytes());
+
         try (stream) {
             return new Lexer().readToEnd(stream);
         } catch (IOException e) {
@@ -22,9 +23,9 @@ class LexerTest {
 
     @Test
     void emptyProgram() {
-        final var code = "Begin\nEnd.";
+        var code = "Begin\nEnd.";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Keyword, "Begin", 1),
                 new Lexeme(LexemeClass.Keyword, "End.", 2)
         );
@@ -34,18 +35,18 @@ class LexerTest {
 
     @Test
     void noText() {
-        final String code = "";
+        String code = "";
 
-        final var expected = Collections.emptyList();
+        var expected = Collections.emptyList();
 
         assertIterableEquals(expected, getResult(code));
     }
 
     @Test
     void assignmentNoSeparator() {
-        final var code = "a:=10;";
+        var code = "a:=10;";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Ident, "a", 1),
                 new Lexeme(LexemeClass.AssignmentOperator, ":=", 1),
                 new Lexeme(LexemeClass.Const, "10", 1),
@@ -57,9 +58,9 @@ class LexerTest {
 
     @Test
     void invalidCharacter() {
-        final var code = "ы :=10;";
+        var code = "ы :=10;";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Separator, " ", 1),
                 new Lexeme(LexemeClass.AssignmentOperator, ":=", 1),
                 new Lexeme(LexemeClass.Const, "10", 1),
@@ -71,9 +72,9 @@ class LexerTest {
 
     @Test
     void invalidCharacterNoSeparator() {
-        final var code = "ы:=10;";
+        var code = "ы:=10;";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Separator, ";", 1)
         );
 
@@ -82,9 +83,9 @@ class LexerTest {
 
     @Test
     void endsWithLineSeparator() {
-        final var code = "Begin\nы:=10;";
+        var code = "Begin\nы:=10;";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Keyword, "Begin", 1),
                 new Lexeme(LexemeClass.Separator, ";", 2)
         );
@@ -94,7 +95,7 @@ class LexerTest {
 
     @Test
     void bigProgram() {
-        final var code =
+        var code =
                 "Var i, abc, d;\n" + // 1
                         "Begin\n" + // 2
                         "  i:=10;\n" + // 3
@@ -107,7 +108,7 @@ class LexerTest {
                         "  abc:= d/(i+2);\n" + // 10
                         "End."; // 11
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Keyword, "Var", 1),
                 new Lexeme(LexemeClass.Separator, " ", 1),
                 new Lexeme(LexemeClass.Ident, "i", 1),
@@ -201,9 +202,9 @@ class LexerTest {
 
     @Test
     void constKeywordNoSeparator() {
-        final var code = "0Begin";
+        var code = "0Begin";
 
-        final var expected = List.of(
+        var expected = List.of(
                 new Lexeme(LexemeClass.Const, "0", 1),
                 new Lexeme(LexemeClass.Keyword, "Begin", 1)
         );
