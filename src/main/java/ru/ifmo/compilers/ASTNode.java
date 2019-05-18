@@ -8,22 +8,24 @@ import java.util.List;
 
 @Data
 class ASTNode<T> {
+    @NonNull
     private final T content;
     private final List<ASTNode> children = new LinkedList<>();
 
-    void print() {
+    void printAsChild() {
         System.out.println(content);
+
         var iterator = children.iterator();
         while (iterator.hasNext())
-            iterator.next().print("", !iterator.hasNext());
+            iterator.next().printAsChild("", iterator.hasNext());
     }
 
-    private void print(@NonNull String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + content);
+    private void printAsChild(@NonNull String prefix, boolean hasNext) {
+        System.out.println(prefix + (hasNext ? "├── " : "└── ") + content);
 
         var iterator = children.iterator();
         while (iterator.hasNext())
-            iterator.next().print(prefix + (isTail ? "    " : "│   "), !iterator.hasNext());
+            iterator.next().printAsChild(prefix + (hasNext ? "│   " : "    "), iterator.hasNext());
     }
 
     ASTNode<T> addChild(@NonNull T content) {

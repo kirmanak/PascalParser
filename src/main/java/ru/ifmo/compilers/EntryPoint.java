@@ -38,7 +38,7 @@ public class EntryPoint {
                     new Parser(lexemes)
                             .parseProgram()
                             .getRoot()
-                            .ifPresent(ASTNode::print);
+                            .ifPresent(ASTNode::printAsChild);
                 });
     }
 
