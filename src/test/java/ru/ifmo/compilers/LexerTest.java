@@ -12,13 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 class LexerTest {
 
     private List<Lexeme> getResult(String code) {
-        var stream = new ByteArrayInputStream(code.getBytes());
+        var lexer = new Lexer(new ByteArrayInputStream(code.getBytes()));
 
-        try (stream) {
-            return new Lexer().readToEnd(stream);
+        try (lexer) {
+            lexer.readToEnd();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return lexer.getLexemes();
     }
 
     @Test

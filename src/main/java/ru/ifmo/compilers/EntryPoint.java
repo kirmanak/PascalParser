@@ -74,12 +74,14 @@ public class EntryPoint {
      * @return the list of the lexemes if successfully read the file
      */
     private static Optional<List<Lexeme>> getLexemes(BufferedInputStream inputStream) {
-        try (inputStream) {
-            return Optional.of(new Lexer().readToEnd(inputStream));
+        var lexer = new Lexer(inputStream);
+
+        try (lexer) {
+            lexer.readToEnd();
         } catch (IOException e) {
             System.err.printf("Unable to read input: %s\n", e.getMessage());
         }
 
-        return Optional.empty();
+        return lexer.getLexemes().isEmpty() ? Optional.empty() : Optional.of(lexer.getLexemes());
     }
 }

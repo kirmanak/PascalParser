@@ -79,7 +79,7 @@ public enum LexemeClass {
      * @param value the string to be tested
      * @return true if the string is {@link this}, false otherwise
      */
-    private boolean test(String value) {
+    public boolean test(String value) {
         switch (this) {
             case Separator:
                 if (WHITESPACE_PATTERN.matcher(value).matches())
