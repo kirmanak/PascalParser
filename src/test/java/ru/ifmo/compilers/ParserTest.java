@@ -19,14 +19,11 @@ class ParserTest {
 
         var Var = expected.addChild(new Lexeme(LexemeClass.Keyword, "Var", 1));
         Var.addChild(new Lexeme(LexemeClass.Ident, "a", 1));
-        Var.addChild(new Lexeme(LexemeClass.Ident, "b", 1));
 
-        var Begin = expected.addChild(new Lexeme(LexemeClass.Keyword, "Begin", 2));
-        var Assigment = Begin.addChild(new Lexeme(LexemeClass.AssignmentOperator, ":=", 3));
+        var Assigment = expected.addChild(new Lexeme(LexemeClass.AssignmentOperator, ":=", 3));
         Assigment.addChild(new Lexeme(LexemeClass.Ident, "a", 3));
         Assigment.addChild(new Lexeme(LexemeClass.Const, "1", 3));
 
-        expected.addChild(new Lexeme(LexemeClass.Keyword, "End.", 4));
 
         var parser = new Parser(TestUtils.getResult(code));
         assertTrue(parser.parseProgram());
