@@ -33,28 +33,21 @@ class OutputTreeNode<T> {
      *
      * @param content the content to be represented
      */
-    OutputTreeNode(@NonNull T content) {
+    private OutputTreeNode(@NonNull T content) {
         this.content = content.toString();
     }
 
     /**
      * Prints the node as root node, then prints its children
      *
-     * @param out    where to print the data
-     * @param prefix the prefix used as tree root.
-     *               If null, this element will be the root
+     * @param out where to print the data
      */
-    void print(@NonNull PrintStream out, String prefix) {
-        if (prefix == null) {
-            out.println(content);
+    void print(@NonNull PrintStream out) {
+        out.println(content);
 
-            var iterator = children.iterator();
-            while (iterator.hasNext())
-                iterator.next().printAsChild("", iterator.hasNext(), out);
-        } else {
-            out.println(prefix);
-            printAsChild("", false, out);
-        }
+        var iterator = children.iterator();
+        while (iterator.hasNext())
+            iterator.next().printAsChild("", iterator.hasNext(), out);
     }
 
     /**
@@ -93,11 +86,15 @@ class OutputTreeNode<T> {
         var bytes = new ByteArrayOutputStream();
 
         try (bytes) {
-            print(new PrintStream(bytes), null);
+            print(new PrintStream(bytes));
         } catch (Throwable e) {
             return super.toString();
         }
 
         return bytes.toString();
+    }
+
+    int getChildCount() {
+        return children.size();
     }
 }

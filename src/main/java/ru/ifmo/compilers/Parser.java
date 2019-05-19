@@ -3,7 +3,6 @@ package ru.ifmo.compilers;
 import lombok.NonNull;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Performs the syntax analysis
@@ -14,7 +13,7 @@ class Parser {
      */
     @NonNull
     private final List<Lexeme> lexemes;
-    private OutputTreeNode<Lexeme> root = null;
+    private OutputTreeNode<Lexeme> root = new OutputTreeNode<>("AST");
 
     /**
      * Constructs a new instance of parser
@@ -27,7 +26,7 @@ class Parser {
 
     @NonNull
     Parser parseProgram() {
-        if (root != null)
+        if (root.getChildCount() > 0)
             throw new IllegalStateException("AST was already parsed!");
 
         lexemes.forEach(this::onNewLexeme);
@@ -35,14 +34,11 @@ class Parser {
         return this;
     }
 
-    Optional<OutputTreeNode<Lexeme>> getRoot() {
-        return Optional.ofNullable(root);
+    OutputTreeNode<Lexeme> getRoot() {
+        return root;
     }
 
     private void onNewLexeme(@NonNull Lexeme lexeme) {
-        if (root == null)
-            root = new OutputTreeNode<>(lexeme);
-        else
-            root.addChild(lexeme);
+        root.addChild(lexeme);
     }
 }

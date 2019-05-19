@@ -1,6 +1,9 @@
 package ru.ifmo.compilers;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +42,10 @@ public class EntryPoint {
                     new Parser(lexemes)
                             .parseProgram()
                             .getRoot()
-                            .ifPresent(node -> node.print(out, "\nAST"));
+                            .ifPresent(node -> {
+                                out.println("\nPrinting the AST:\n");
+                                node.print(out);
+                            });
                 });
     }
 
