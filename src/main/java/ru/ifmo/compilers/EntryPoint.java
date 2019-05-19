@@ -35,17 +35,19 @@ public class EntryPoint {
                 .map(EntryPoint::getLexemes)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .forEach(lexemes -> {
+                .filter(List::isEmpty)
+                .map(lexemes -> {
                     out.println("\nPrinting the result for next file:\n");
                     lexemes.forEach(out::println);
 
-                    new Parser(lexemes)
-                            .parseProgram()
-                            .getRoot()
-                            .ifPresent(node -> {
-                                out.println("\nPrinting the AST:\n");
-                                node.print(out);
-                            });
+                    return new Parser(lexemes.iterator())
+                            .startParser()
+                            .getRoot();
+                })
+                .filter(OutputTreeNode::hasChildren)
+                .forEach(node -> {
+                    out.println("\nPrinting the AST:\n");
+                    node.print(out);
                 });
     }
 

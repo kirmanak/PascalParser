@@ -92,7 +92,7 @@ class Lexer implements AutoCloseable, Closeable {
         boolean isLineSeparator = isLineSeparator(symbol);
 
         if (LexemeClass.Separator.test(symbol) || isLineSeparator) {
-            if (!oldString.isBlank()) {
+            if (!oldString.isEmpty()) {
                 if (oldLexemeClass == LexemeClass.Undefined)
                     System.err.printf("Undefined sequence found on %d-th line: %s\n", lineNumber, oldString);
                 else
@@ -101,7 +101,7 @@ class Lexer implements AutoCloseable, Closeable {
 
             if (isLineSeparator)
                 lineNumber++;
-            else
+            else if (!symbol.isBlank())
                 addLexeme(new Lexeme(LexemeClass.Separator, symbol, lineNumber));
 
             currentString = "";

@@ -94,7 +94,7 @@ class OutputTreeNode<T> {
         return bytes.toString();
     }
 
-    int getChildCount() {
-        return children.size();
+    boolean hasChildren() {
+        return children.size() > 0;
     }
 }
