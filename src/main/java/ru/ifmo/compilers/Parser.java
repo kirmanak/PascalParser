@@ -1,39 +1,49 @@
 package ru.ifmo.compilers;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
-@RequiredArgsConstructor
+/**
+ * Performs the syntax analysis
+ */
 class Parser {
+    /**
+     * The list of lexemes from {@link Lexer}
+     */
     @NonNull
     private final List<Lexeme> lexemes;
-    private OutputTreeNode<Lexeme> root = null;
+    private OutputTreeNode<Lexeme> root = new OutputTreeNode<>(new Lexeme(LexemeClass.Undefined, "Program root", -1));
+    private Deque<OutputTreeNode<Lexeme>> stack = new ArrayDeque<>();
+
+    /**
+     * Constructs a new instance of parser
+     *
+     * @param lexemes the list of lexemes to be parsed
+     */
+    Parser(List<Lexeme> lexemes) {
+        this.lexemes = lexemes;
+        stack.push(root);
+    }
 
     Parser parseProgram() {
         if (root != null)
             throw new IllegalStateException("AST was already parsed!");
-        Random random = new Random();
 
-        var iterator = lexemes.listIterator();
-        if (iterator.hasNext())
-            root = new OutputTreeNode<>(iterator.next());
-
-        List<OutputTreeNode<Lexeme>> nodes = new ArrayList<>(lexemes.size());
-        nodes.add(root);
-        while (iterator.hasNext()) {
-            var node = nodes.get(random.nextInt(nodes.size()));
-            nodes.add(node.addChild(iterator.next()));
-        }
+        lexemes.forEach(this::onNewLexeme);
 
         return this;
     }
 
     Optional<OutputTreeNode> getRoot() {
         return Optional.ofNullable(root);
+    }
+
+    private void onNewLexeme(Lexeme lexeme) {
+        root.addChild(lexeme);
+        Optional.ofNullable(stack.peek()).ifPresent(head -> );
     }
 }
