@@ -1,9 +1,10 @@
 package ru.ifmo.compilers;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,13 +14,14 @@ import java.util.List;
  *
  * @param <T> the type of the content in the node
  */
-@Data
+@AllArgsConstructor
+@EqualsAndHashCode
 class OutputTreeNode<T> {
     /**
      * The content to represent
      */
     @NonNull
-    private final T content;
+    private final String content;
 
     /**
      * The list of child nodes
@@ -27,30 +29,32 @@ class OutputTreeNode<T> {
     private final List<OutputTreeNode> children = new LinkedList<>();
 
     /**
-     * Wraps OutputStream to PrintStream.
-     * Returns the argument if it is actually a PrintStream
-     * or creates a new one otherwise.
+     * Creates a new tree node
      *
-     * @param out the stream to be wrapped
-     * @return the argument itself or a new PrintStream instance
+     * @param content the content to be represented
      */
-    private static PrintStream getOutput(@NonNull OutputStream out) {
-        return out instanceof PrintStream ? (PrintStream) out : new PrintStream(out, true);
+    OutputTreeNode(@NonNull T content) {
+        this.content = content.toString();
     }
 
     /**
      * Prints the node as root node, then prints its children
      *
-     * @param out where to print the data
+     * @param out    where to print the data
+     * @param prefix the prefix used as tree root.
+     *               If null, this element will be the root
      */
-    void print(@NonNull OutputStream out) {
-        PrintStream stream = getOutput(out);
+    void print(@NonNull PrintStream out, String prefix) {
+        if (prefix == null) {
+            out.println(content);
 
-        stream.println(content);
-
-        var iterator = children.iterator();
-        while (iterator.hasNext())
-            iterator.next().printAsChild("", iterator.hasNext(), stream);
+            var iterator = children.iterator();
+            while (iterator.hasNext())
+                iterator.next().printAsChild("", iterator.hasNext(), out);
+        } else {
+            out.println(prefix);
+            printAsChild("", false, out);
+        }
     }
 
     /**
@@ -61,7 +65,7 @@ class OutputTreeNode<T> {
      */
     @NonNull
     OutputTreeNode<T> addChild(@NonNull T content) {
-        var node = new OutputTreeNode<T>(content);
+        var node = new OutputTreeNode<>(content);
         children.add(node);
         return node;
     }
@@ -82,5 +86,18 @@ class OutputTreeNode<T> {
         var iterator = children.iterator();
         while (iterator.hasNext())
             iterator.next().printAsChild(newPrefix, iterator.hasNext(), stream);
+    }
+
+    @Override
+    public String toString() {
+        var bytes = new ByteArrayOutputStream();
+
+        try (bytes) {
+            print(new PrintStream(bytes), null);
+        } catch (Throwable e) {
+            return super.toString();
+        }
+
+        return bytes.toString();
     }
 }

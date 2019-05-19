@@ -1,8 +1,6 @@
 package ru.ifmo.compilers;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EntryPoint {
+    /**
+     * The stream to be used as output for the program
+     */
+    private static final PrintStream out = System.out;
+
     /**
      * The program entry point. Checks arguments for a file name, tries to open it if any present.
      * If none is present or the open attempt failed, reads from stdin. Passes the input to Lexer, prints the result.
@@ -30,15 +33,13 @@ public class EntryPoint {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(lexemes -> {
-                    System.out.println("\nPrinting the result for next file:\n");
-                    lexemes.forEach(System.out::println);
-
-                    System.out.println("\nPrinting the AST:\n");
+                    out.println("\nPrinting the result for next file:\n");
+                    lexemes.forEach(out::println);
 
                     new Parser(lexemes)
                             .parseProgram()
                             .getRoot()
-                            .ifPresent(node -> node.print(System.out));
+                            .ifPresent(node -> node.print(out, "\nAST"));
                 });
     }
 

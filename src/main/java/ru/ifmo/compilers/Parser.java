@@ -2,8 +2,6 @@ package ru.ifmo.compilers;
 
 import lombok.NonNull;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,19 +14,18 @@ class Parser {
      */
     @NonNull
     private final List<Lexeme> lexemes;
-    private OutputTreeNode<Lexeme> root = new OutputTreeNode<>(new Lexeme(LexemeClass.Undefined, "Program root", -1));
-    private Deque<OutputTreeNode<Lexeme>> stack = new ArrayDeque<>();
+    private OutputTreeNode<Lexeme> root = null;
 
     /**
      * Constructs a new instance of parser
      *
      * @param lexemes the list of lexemes to be parsed
      */
-    Parser(List<Lexeme> lexemes) {
+    Parser(@NonNull List<Lexeme> lexemes) {
         this.lexemes = lexemes;
-        stack.push(root);
     }
 
+    @NonNull
     Parser parseProgram() {
         if (root != null)
             throw new IllegalStateException("AST was already parsed!");
@@ -38,12 +35,14 @@ class Parser {
         return this;
     }
 
-    Optional<OutputTreeNode> getRoot() {
+    Optional<OutputTreeNode<Lexeme>> getRoot() {
         return Optional.ofNullable(root);
     }
 
-    private void onNewLexeme(Lexeme lexeme) {
-        root.addChild(lexeme);
-        Optional.ofNullable(stack.peek()).ifPresent(head -> );
+    private void onNewLexeme(@NonNull Lexeme lexeme) {
+        if (root == null)
+            root = new OutputTreeNode<>(lexeme);
+        else
+            root.addChild(lexeme);
     }
 }

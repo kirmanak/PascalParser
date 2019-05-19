@@ -12,16 +12,16 @@ public class Lexeme {
      * The class of found lexeme
      */
     @NonNull
-    private final LexemeClass mClass;
+    private final LexemeClass lexemeClass;
 
     /**
      * The sign of the lexeme
      */
     @NonNull
-    private final String mSign;
+    private final String sign;
 
     /**
      * The line of source code where it was found
      */
-    private final int mLine;
+    private final int line;
 }

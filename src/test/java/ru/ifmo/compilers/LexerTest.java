@@ -3,26 +3,16 @@ package ru.ifmo.compilers;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.ifmo.compilers.TestUtils.getResult;
 
 class LexerTest {
 
-    private List<Lexeme> getResult(String code) {
-        var lexer = new Lexer(new ByteArrayInputStream(code.getBytes()));
 
-        try (lexer) {
-            lexer.readToEnd();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return lexer.getLexemes();
-    }
 
     @Test
     void emptyProgram() {
