@@ -291,6 +291,6 @@ class LexerTest {
             var lexer = new Lexer(new ByteArrayInputStream("hello".getBytes()));
             lexer.readToEnd();
             lexer.readToEnd();
-        }, "You have to use a new instance of " + Lexer.class.getSimpleName());
+        });
     }
 }

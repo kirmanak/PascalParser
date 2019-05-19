@@ -3,7 +3,10 @@ package ru.ifmo.compilers;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ParserTest {
 
@@ -30,8 +33,18 @@ class ParserTest {
         assertEquals(expected, getResult(code));
     }
 
+    @Test
+    void disallowReuse() {
+        assertThrows(IllegalStateException.class, () -> {
+            var parser = new Parser(List.of(new Lexeme(LexemeClass.Keyword, "Var", 1)));
+            parser.parseProgram();
+            parser.parseProgram();
+        });
+    }
+
     private OutputTreeNode<Lexeme> getResult(@NonNull String code) {
         return new Parser(TestUtils.getResult(code))
+                .parseProgram()
                 .getRoot()
                 .orElse(null);
     }
