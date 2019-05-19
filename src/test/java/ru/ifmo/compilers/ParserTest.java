@@ -1,12 +1,10 @@
 package ru.ifmo.compilers;
 
-import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ParserTest {
 
@@ -30,7 +28,9 @@ class ParserTest {
 
         expected.addChild(new Lexeme(LexemeClass.Keyword, "End.", 4));
 
-        assertEquals(expected, getResult(code));
+        var parser = new Parser(TestUtils.getResult(code));
+        assertTrue(parser.parseProgram());
+        assertEquals(expected, parser.getRoot());
     }
 
     @Test
@@ -40,12 +40,5 @@ class ParserTest {
             parser.parseProgram();
             parser.parseProgram();
         });
-    }
-
-    private OutputTreeNode<Lexeme> getResult(@NonNull String code) {
-        return new Parser(TestUtils.getResult(code))
-                .parseProgram()
-                .getRoot()
-                .orElse(null);
     }
 }
