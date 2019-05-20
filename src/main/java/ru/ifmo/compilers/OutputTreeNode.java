@@ -2,10 +2,12 @@ package ru.ifmo.compilers;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,7 +28,8 @@ class OutputTreeNode<T> {
     /**
      * The list of child nodes
      */
-    private final List<OutputTreeNode> children = new LinkedList<>();
+    @Getter
+    private final List<OutputTreeNode<T>> children = new LinkedList<>();
 
     /**
      * Creates a new tree node
@@ -96,5 +99,9 @@ class OutputTreeNode<T> {
 
     boolean hasChildren() {
         return children.size() > 0;
+    }
+
+    void addChildren(Collection<OutputTreeNode<T>> newChildren) {
+        children.addAll(newChildren);
     }
 }

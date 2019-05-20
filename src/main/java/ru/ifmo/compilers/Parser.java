@@ -19,7 +19,7 @@ class Parser {
     @Getter
     private final List<String> errorMessages = new ArrayList<>();
     @Getter
-    private OutputTreeNode<Lexeme> root = new OutputTreeNode<>("AST");
+    private OutputTreeNode<Lexeme> root = new OutputTreeNode<>("\nAST");
     private int index = -1;
 
     /**
@@ -32,7 +32,7 @@ class Parser {
     }
 
     boolean parseProgram() {
-        if (root.hasChildren())
+        if (root.hasChildren() || index > -1)
             throw new IllegalStateException("AST was already parsed!");
 
         return parseVariablesDeclaration(root, true) && parseComputations(root, true);
@@ -102,12 +102,10 @@ class Parser {
 
     private boolean parseAssignment(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
         Lexeme toBeAssigned;
-        if (checkNextLexeme(LexemeClass.Ident, null, isLastAlternative)) {
+        if (checkNextLexeme(LexemeClass.Ident, null, isLastAlternative))
             toBeAssigned = lexemes.get(index);
-            parent.addChild(toBeAssigned);
-        } else {
+        else
             return false;
-        }
 
         OutputTreeNode<Lexeme> assignmentOp;
         if (checkNextLexeme(LexemeClass.AssignmentOperator, null, isLastAlternative))
@@ -136,28 +134,32 @@ class Parser {
             return checkNextLexeme(LexemeClass.Separator, ")", true);
         }
 
-        if (parseOperand(parent, false))
-            return true;
+        OutputTreeNode<Lexeme> operation = new OutputTreeNode<>("Dummy");
+        if (parseOperand(operation, isLastAlternative)) {
+            var store = new NodeStore();
 
-        if (parseSubExpression(parent, isLastAlternative)) {
+            if (parseBinaryOperator(parent, true, store)) {
+                store.getNode().addChildren(operation.getChildren());
 
-            if (!parseBinaryOperator(parent, true))
-                return false;
+                return parseSubExpression(store.getNode(), true);
+            } else {
+                parent.addChildren(operation.getChildren());
 
-            return parseSubExpression(parent, true);
+                return true;
+            }
         }
 
         return false;
     }
 
-    private boolean parseBinaryOperator(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
+    private boolean parseBinaryOperator(OutputTreeNode<Lexeme> parent, boolean isLastAlternative, @NonNull NodeStore store) {
         if (checkNextLexeme(LexemeClass.ArithmeticOperator, null, false)) {
-            addLexeme(parent);
+            store.setNode(addLexeme(parent));
             return true;
         }
 
         if (checkNextLexeme(LexemeClass.ComparisonOperator, null, isLastAlternative))
-            addLexeme(parent);
+            store.setNode(addLexeme(parent));
         else
             return false;
 
@@ -165,7 +167,7 @@ class Parser {
     }
 
     private boolean parseUnaryOperation(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
-        if (checkNextLexeme(LexemeClass.ArithmeticOperator, "-", false))
+        if (checkNextLexeme(LexemeClass.ArithmeticOperator, "-", isLastAlternative))
             addLexeme(parent);
         else
             return false;
@@ -213,7 +215,7 @@ class Parser {
     }
 
     private boolean checkNextLexeme(@NonNull LexemeClass lexemeClass, String sign, boolean isLastAlternative) {
-        if (index < lexemes.size()) {
+        if (index + 1 < lexemes.size()) {
             Lexeme lexeme = lexemes.get(index + 1);
 
             if (lexeme.getLexemeClass() == lexemeClass && (sign == null || lexeme.getSign().equals(sign))) {
@@ -237,7 +239,7 @@ class Parser {
         return false;
     }
 
-    private OutputTreeNode<Lexeme> addLexeme(OutputTreeNode<Lexeme> node) {
+    private OutputTreeNode<Lexeme> addLexeme(@NonNull OutputTreeNode<Lexeme> node) {
         return node.addChild(lexemes.get(index));
     }
 }
