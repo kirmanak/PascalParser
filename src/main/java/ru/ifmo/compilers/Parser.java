@@ -226,7 +226,7 @@ class Parser {
             if (isLastAlternative) {
                 errorMessages.add(String.format(
                         "On line %d expected '%s', but found '%s'",
-                        lexeme.getLine(), sign, lexeme.getSign()
+                        lexeme.getLine(), sign == null ? "*Any* " + lexemeClass : sign, lexeme.getSign()
                 ));
             }
 
