@@ -93,7 +93,7 @@ class Parser {
 
         OutputTreeNode<Lexeme> doNode;
         if (checkNextLexeme(LexemeClass.Keyword, "DO", isLastAlternative))
-            doNode = addLexeme(parent);
+            doNode = addLexeme(whileNode);
         else
             return false;
 
