@@ -51,7 +51,7 @@ class Parser {
 
     private boolean parseOperatorsList(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
         if (parseOperator(parent, isLastAlternative)) {
-            parseOperatorsList(parent, isLastAlternative);
+            parseOperatorsList(parent, false);
             return true;
         }
 
@@ -90,14 +90,13 @@ class Parser {
         if (!parseExpression(whileNode, true))
             return false;
 
-
         OutputTreeNode<Lexeme> doNode;
-        if (checkNextLexeme(LexemeClass.Keyword, "DO", isLastAlternative))
+        if (checkNextLexeme(LexemeClass.Keyword, "DO", true))
             doNode = addLexeme(whileNode);
         else
             return false;
 
-        return parseOperator(doNode, isLastAlternative);
+        return parseOperator(doNode, true);
     }
 
     private boolean parseAssignment(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
@@ -108,7 +107,7 @@ class Parser {
             return false;
 
         OutputTreeNode<Lexeme> assignmentOp;
-        if (checkNextLexeme(LexemeClass.AssignmentOperator, null, isLastAlternative))
+        if (checkNextLexeme(LexemeClass.AssignmentOperator, null, true))
             assignmentOp = addLexeme(parent);
         else
             return false;
@@ -138,7 +137,7 @@ class Parser {
         if (parseOperand(operation, isLastAlternative)) {
             var store = new NodeStore();
 
-            if (parseBinaryOperator(parent, true, store)) {
+            if (parseBinaryOperator(parent, false, store)) {
                 store.getNode().addChildren(operation.getChildren());
 
                 return parseSubExpression(store.getNode(), true);
@@ -158,21 +157,21 @@ class Parser {
             return true;
         }
 
-        if (checkNextLexeme(LexemeClass.ComparisonOperator, null, isLastAlternative))
+        if (checkNextLexeme(LexemeClass.ComparisonOperator, null, isLastAlternative)) {
             store.setNode(addLexeme(parent));
-        else
-            return false;
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     private boolean parseUnaryOperation(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
-        if (checkNextLexeme(LexemeClass.ArithmeticOperator, "-", isLastAlternative))
+        if (checkNextLexeme(LexemeClass.ArithmeticOperator, "-", isLastAlternative)) {
             addLexeme(parent);
-        else
-            return false;
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     private boolean parseOperand(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
@@ -192,7 +191,6 @@ class Parser {
     private boolean parseVariablesDeclaration(OutputTreeNode<Lexeme> parent, boolean isLastAlternative) {
         if (checkNextLexeme(LexemeClass.Keyword, "Var", isLastAlternative))
             return parseVariablesList(addLexeme(parent), isLastAlternative);
-
         else
             return false;
     }
@@ -208,8 +206,8 @@ class Parser {
             return true;
         }
 
-        if (checkNextLexeme(LexemeClass.Separator, ",", true))
-            return parseVariablesList(parent, true);
+        if (checkNextLexeme(LexemeClass.Separator, ",", isLastAlternative))
+            return parseVariablesList(parent, isLastAlternative);
 
         return false;
     }

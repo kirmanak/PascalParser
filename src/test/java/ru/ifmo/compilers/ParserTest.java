@@ -1,12 +1,57 @@
 package ru.ifmo.compilers;
 
+import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParserTest {
+
+    private static void assertCorrect(String code, OutputTreeNode<Lexeme> expected) {
+        var parser = getParser(code);
+        assertTrue(parser.parseProgram());
+        printResults(parser);
+        assertEquals(expected, parser.getRoot());
+        assertIterableEquals(Collections.emptyList(), parser.getErrorMessages());
+    }
+
+    private static void assertIncorrect(@NonNull String code, @NonNull OutputTreeNode<Lexeme> root,
+                                        @NonNull List<String> errors) {
+        var parser = getParser(code);
+        assertFalse(parser.parseProgram());
+        printResults(parser);
+        assertEquals(root, parser.getRoot());
+        assertIterableEquals(errors, parser.getErrorMessages());
+    }
+
+    private static Parser getParser(@NonNull String code) {
+        var lexemes = TestUtils.getResult(code);
+        lexemes.forEach(System.out::println);
+
+        return new Parser(lexemes);
+    }
+
+    private static void printResults(@NonNull Parser parser) {
+        parser.getRoot().print(System.out);
+        System.out.println();
+        parser.getErrorMessages().forEach(System.out::println);
+    }
+
+    @Test
+    void disallowReuse() {
+        assertThrows(IllegalStateException.class, () -> {
+            var parser = new Parser(List.of(new Lexeme(LexemeClass.Keyword, "Var", 1)));
+            parser.parseProgram();
+            parser.parseProgram();
+        });
+    }
+
+    private static OutputTreeNode<Lexeme> getRoot() {
+        return new OutputTreeNode<>("\nAST");
+    }
 
     @Test
     void parseProgram() {
@@ -15,7 +60,7 @@ class ParserTest {
                 "  a := 1;\n" +
                 "End.\n";
 
-        var expected = new OutputTreeNode<Lexeme>("\nAST");
+        var expected = getRoot();
 
         var Var = expected.addChild(new Lexeme(LexemeClass.Keyword, "Var", 1));
         Var.addChild(new Lexeme(LexemeClass.Ident, "a", 1));
@@ -24,7 +69,7 @@ class ParserTest {
         Assigment.addChild(new Lexeme(LexemeClass.Ident, "a", 3));
         Assigment.addChild(new Lexeme(LexemeClass.Const, "1", 3));
 
-        doAssert(code, expected);
+        assertCorrect(code, expected);
     }
 
     @Test
@@ -36,7 +81,7 @@ class ParserTest {
                 "    a := a-1;\n" +
                 "End.";
 
-        var expected = new OutputTreeNode<Lexeme>("\nAST");
+        var expected = getRoot();
 
         expected.addChild(new Lexeme(LexemeClass.Keyword, "Var", 1))
                 .addChild(new Lexeme(LexemeClass.Ident, "a", 1));
@@ -60,23 +105,28 @@ class ParserTest {
         arithmeticOperator.addChild(new Lexeme(LexemeClass.Ident, "a", 5));
         arithmeticOperator.addChild(new Lexeme(LexemeClass.Const, "1", 5));
 
-        doAssert(code, expected);
+        assertCorrect(code, expected);
     }
 
     @Test
-    void disallowReuse() {
-        assertThrows(IllegalStateException.class, () -> {
-            var parser = new Parser(List.of(new Lexeme(LexemeClass.Keyword, "Var", 1)));
-            parser.parseProgram();
-            parser.parseProgram();
-        });
+    void noBegin() {
+        var code = "Var a;\n" +
+                "End.";
+
+        var expected = getRoot();
+
+        var Var = expected.addChild(new Lexeme(LexemeClass.Keyword, "Var", 1));
+        Var.addChild(new Lexeme(LexemeClass.Ident, "a", 1));
+
+        var expectedError = List.of(
+                "On line 2 expected 'Begin', but found 'End.'"
+        );
+
+        assertIncorrect(code, expected, expectedError);
     }
 
-    private void doAssert(String code, OutputTreeNode<Lexeme> expected) {
-        var lexemes = TestUtils.getResult(code);
-        var parser = new Parser(lexemes);
-        lexemes.forEach(System.out::println);
-        assertTrue(parser.parseProgram());
-        assertEquals(expected, parser.getRoot());
+    @Test
+    void emptyBody() {
+
     }
 }
