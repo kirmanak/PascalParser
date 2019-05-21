@@ -250,4 +250,16 @@ class LexerTest {
             lexer.readToEnd();
         });
     }
+
+    @Test
+    void unfinishedComment() {
+        var code = "Var a{,";
+
+        var expected = List.of(
+                new Lexeme(LexemeClass.Keyword, "Var", 1),
+                new Lexeme(LexemeClass.Ident, "a", 1)
+        );
+
+        assertIterableEquals(expected, getResult(code));
+    }
 }
