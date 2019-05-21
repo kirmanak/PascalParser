@@ -84,6 +84,11 @@ class OutputTreeNode<T> {
             iterator.next().printAsChild(newPrefix, iterator.hasNext(), stream);
     }
 
+    /**
+     * Writes {@link OutputTreeNode#print} result to String
+     *
+     * @return the resulting String instance
+     */
     @Override
     public String toString() {
         var bytes = new ByteArrayOutputStream();
@@ -97,10 +102,20 @@ class OutputTreeNode<T> {
         return bytes.toString();
     }
 
+    /**
+     * Checks whether this node has children or not
+     *
+     * @return true if children.size() > 0, false otherwise
+     */
     boolean hasChildren() {
         return children.size() > 0;
     }
 
+    /**
+     * Adds all children from the {@param newChildren} to this node
+     *
+     * @param newChildren children to add
+     */
     void addChildren(Collection<OutputTreeNode<T>> newChildren) {
         children.addAll(newChildren);
     }

@@ -10,14 +10,40 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Performs lexical analysis resulting in a list of {@link Lexeme}
+ */
 @RequiredArgsConstructor
 class Lexer implements AutoCloseable, Closeable {
+    /**
+     * The stream to be used as input
+     */
     @NonNull
     private final InputStream stream;
+
+    /**
+     * The list of found lexemes
+     */
     private List<Lexeme> lexemes = null;
+
+    /**
+     * Buffer string which contents will later be sign of found lexeme
+     */
     private String currentString = "";
+
+    /**
+     * Current line number
+     */
     private int lineNumber = 1;
+
+    /**
+     * {@link LexemeClass} of last found lexeme
+     */
     private LexemeClass currentClass;
+
+    /**
+     * Whether we are currently reading a comment or not
+     */
     private boolean isComment = false;
 
     /**
