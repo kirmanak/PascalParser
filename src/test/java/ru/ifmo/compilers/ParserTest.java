@@ -127,6 +127,19 @@ class ParserTest {
 
     @Test
     void emptyBody() {
+        var code = "Var a;\n" +
+                "Begin\n" +
+                "End.";
 
+        var expected = getRoot();
+
+        var Var = expected.addChild(new Lexeme(LexemeClass.Keyword, "Var", 1));
+        Var.addChild(new Lexeme(LexemeClass.Ident, "a", 1));
+
+        var expectedError = List.of(
+                "On line 3 expected 'Begin', but found 'End.'"
+        );
+
+        assertIncorrect(code, expected, expectedError);
     }
 }
